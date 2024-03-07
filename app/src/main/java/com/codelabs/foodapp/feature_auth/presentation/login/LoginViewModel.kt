@@ -23,10 +23,10 @@ class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase
 ) :ViewModel(){
 
-    private val _emailState = mutableStateOf(StandardTextFieldState())
+    private val _emailState = mutableStateOf(StandardTextFieldState("vamsi@gmail.com"))
     val emailState: State<StandardTextFieldState> = _emailState
 
-    private val _passwordState = mutableStateOf(PaswordFieldState())
+    private val _passwordState = mutableStateOf(PaswordFieldState("Vamsi@1289"))
     val passwordState:State<PaswordFieldState> = _passwordState
 
     private val _loginState = mutableStateOf(LoginState())
@@ -38,9 +38,6 @@ class LoginViewModel constructor(
     fun onEvent(event:LoginEvent){
         when(event){
             is LoginEvent.EnteredEmail->{
-//                event.email.also { this.emailState.value = it }
-//                _emailState.value = this.emailState.value = event.email
-//                _emailState.value = emailState.value.let { it.copy(text = event.email) }
                 _emailState.value = emailState.value.copy(
                     text = event.email
                 )

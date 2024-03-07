@@ -2,6 +2,7 @@ package com.codelabs.foodapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +23,8 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination){
         composable(NavigationItem.Login.route){
-            LoginScreen(navController,LoginViewModel(LoginUseCase()))
+            LoginScreen(navController,LoginViewModel(LoginUseCase(LocalContext.current
+                .applicationContext)))
         }
         composable(NavigationItem.Menu.route){
             MenuScreen(navController, categories)
