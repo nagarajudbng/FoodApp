@@ -6,9 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.codelabs.foodapp.feature_auth.presentation.login.LoginScreen
-import com.codelabs.foodapp.MenuScreen
+import com.codelabs.foodapp.feature_prod.presentation.MenuScreen
 import com.codelabs.foodapp.feature_auth.domain.usecases.LoginUseCase
 import com.codelabs.foodapp.feature_auth.presentation.login.LoginViewModel
+import com.codelabs.foodapp.feature_prod.presentation.categories
 
 
 @Composable
@@ -24,7 +25,7 @@ fun AppNavHost(
             LoginScreen(navController,LoginViewModel(LoginUseCase()))
         }
         composable(NavigationItem.Menu.route){
-            MenuScreen(navController)
+            MenuScreen(navController, categories)
         }
     }
 }
