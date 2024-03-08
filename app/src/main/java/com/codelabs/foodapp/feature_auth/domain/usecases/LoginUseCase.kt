@@ -21,9 +21,6 @@ class LoginUseCase(private val app: Context) {
         if(emailError !=null || passwordError !=null){
             return LoginResult(emailError, passwordError)
         }
-//        repository.login(email,password)
-//        return LoginResult(null,null,
-//            Resource.Success(Unit) as SimpleResource)
         return LoginResult(
             result = repository.login(email,password)
         )

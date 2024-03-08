@@ -13,17 +13,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codelabs.foodapp.Categories
-import com.codelabs.foodapp.ItemList
 import com.codelabs.foodapp.R
-import com.codelabs.foodapp.Subcategories
 
 @Preview
 @Composable
 fun CategoryItemPreview(){
-    CategoryItem(categories.get(0))
+//    CategoryItem(categories.get(0), {
+//
+//    }, i)
 }
 @Composable
-fun CategoryItem(item: Categories) {
+fun CategoryItem( pos: Int,item: Categories, onCategorySelect: () -> Unit) {
     OutlinedButton(
         modifier = Modifier,
         onClick = {
@@ -37,12 +37,14 @@ fun CategoryItem(item: Categories) {
             )
         )
     ) {
-        Text(
-            text = "ADD",
-            modifier = Modifier ,
-            fontSize =18.sp,
-            color = Color.Black
+        item.name?.let {
+            Text(
+                text = it,
+                modifier = Modifier ,
+                fontSize =18.sp,
+                color = Color.Black
 
-        )
+            )
+        }
     }
 }

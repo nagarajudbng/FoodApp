@@ -15,5 +15,5 @@ interface LoginApi {
     }
     @Headers("Content-Type: application/json")
     @POST("login")
-    suspend fun login(@Body request: LoginRequestParent):Response<JSONObject>
+    suspend fun login(@Body request: LoginRequestParent):Response<LoginResponseParent>
 }

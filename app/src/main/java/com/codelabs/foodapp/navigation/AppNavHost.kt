@@ -10,6 +10,8 @@ import com.codelabs.foodapp.feature_auth.presentation.login.LoginScreen
 import com.codelabs.foodapp.feature_prod.presentation.MenuScreen
 import com.codelabs.foodapp.feature_auth.domain.usecases.LoginUseCase
 import com.codelabs.foodapp.feature_auth.presentation.login.LoginViewModel
+import com.codelabs.foodapp.feature_prod.domain.usecases.ProductUseCase
+import com.codelabs.foodapp.feature_prod.presentation.MenuViewModel
 import com.codelabs.foodapp.feature_prod.presentation.categories
 
 
@@ -27,7 +29,9 @@ fun AppNavHost(
                 .applicationContext)))
         }
         composable(NavigationItem.Menu.route){
-            MenuScreen(navController, categories)
+            MenuScreen(navController, MenuViewModel(ProductUseCase(LocalContext.current
+                .applicationContext)),
+                    categories)
         }
     }
 }

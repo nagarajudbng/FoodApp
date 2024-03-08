@@ -2,10 +2,10 @@ package com.codelabs.foodapp.feature_prod.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,12 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.codelabs.foodapp.Categories
 import com.codelabs.foodapp.ItemList
+import com.codelabs.foodapp.MenuList
 import com.codelabs.foodapp.Subcategories
 import androidx.navigation.NavHostController as NavHostController1
 
@@ -62,6 +59,7 @@ fun MenuScreenPreview(){
 @Composable
 fun MenuScreen(
     navController: NavHostController1,
+    viewModel: MenuViewModel,
     content:List<Categories>
 ) {
 //    Column(
@@ -75,7 +73,20 @@ fun MenuScreen(
 //            Text("Go to Previous Screen")
 //        }
 //    }
-    ProductScreenContent(content)
+//    LaunchedEffect(key1 = true){
+//
+//    }
+    val pagingState = viewModel.pagingState.value
+    Box(modifier =Modifier.fillMaxSize()) {
+        var menuList: MenuList? = viewModel.productState.value.productList
+        (menuList?.MenuListResonse?.menuItemList?.categories
+            ?: null)?.let { ProductScreenContent(it) }
+        if(pagingState.isLoading){
+            CircularProgressIndicator(
+                modifier = Modifier.align(alignment = Alignment.Center)
+            )
+        }
+    }
 }
 @Preview
 @Composable
@@ -90,33 +101,40 @@ fun ProductScreenContent(
     Surface(modifier = Modifier
         .fillMaxSize()
     ){
+
         Column(modifier = Modifier
             .padding(bottom = 50.dp)
         ) {
             SearchBar(Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(5.dp))
-            ProductList(categories.get(0).subcategories.get(0).itemList)
+            ProductList(content.get(0).subcategories.get(0).itemList)
         }
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.Bottom
         ){
-            CategoryList(modifier = Modifier,categories)
+            CategoryList(modifier = Modifier,content, onCategorySelect = {
+
+            })
         }
     }
 }
 @Composable
 fun CategoryList(
     modifier : Modifier = Modifier,
-    categories: List<Categories>
+    categories: List<Categories>,
+    onCategorySelect:()->Unit
 ) {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
                 .background(Color.White)
         ) {
-            items(categories) { item ->
-                CategoryItem(item)
+            items(categories.size) { i ->
+                val category = categories.get(i)
+                CategoryItem(pos = i,category, onCategorySelect = {
+                    onCategorySelect(i)
+                })
             }
         }
 }
