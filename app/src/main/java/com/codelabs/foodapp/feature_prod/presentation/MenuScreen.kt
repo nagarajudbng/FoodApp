@@ -1,30 +1,47 @@
 package com.codelabs.foodapp.feature_prod.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.codelabs.foodapp.Categories
 import com.codelabs.foodapp.ItemList
-import com.codelabs.foodapp.MenuList
+import com.codelabs.foodapp.R
 import com.codelabs.foodapp.Subcategories
+import com.codelabs.foodapp.feature_prod.domain.usecases.ProductUseCase
+import kotlinx.coroutines.Dispatchers
 import androidx.navigation.NavHostController as NavHostController1
 
 var itemList = arrayListOf<ItemList>(
@@ -53,105 +70,144 @@ var categories:List<Categories> = arrayListOf<Categories>(
 @Preview
 @Composable
 fun MenuScreenPreview(){
-//    MenuScreen(navController = NavHostController1,content = categories)
+    MenuScreen(
+        modifier = Modifier.background(colorResource(id = R.color.list_background)),
+        rememberNavController(),
+        MenuViewModel(
+            ProductUseCase(
+                LocalContext.current.applicationContext
+            ),
+            Dispatchers.Default
+        ),
+        categories)
 }
 
 @Composable
 fun MenuScreen(
+    modifier: Modifier = Modifier.background(colorResource(id = R.color.pink)),
     navController: NavHostController1,
     viewModel: MenuViewModel,
     content:List<Categories>
 ) {
-//    Column(
-//        Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        Button(onClick = {
-//            navController.popBackStack()
-//        }) {
-//            Text("Go to Previous Screen")
-//        }
-//    }
-//    LaunchedEffect(key1 = true){
-//
-//    }
-    val pagingState = viewModel.pagingState.value
-    Box(modifier =Modifier.fillMaxSize()) {
-        var menuList: MenuList? = viewModel.productState.value.productList
-        (menuList?.MenuListResonse?.menuItemList?.categories
-            ?: null)?.let { ProductScreenContent(it) }
-        if(pagingState.isLoading){
-            CircularProgressIndicator(
-                modifier = Modifier.align(alignment = Alignment.Center)
-            )
+    val uiState by viewModel.uiState.collectAsState(ProductScreenUiState())
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+
+        ) {
+
+            if (!uiState.productUiState.isLoading) {
+                Log.d("UI Render","Loading")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                Log.d("UI Render","Products")
+                ProductScreenContent(uiState)
+            }
         }
     }
 }
+
 @Preview
 @Composable
 fun ProductScreenContentPreview(){
-    ProductScreenContent(content = categories
-    )
+//    ProductScreenContent(
+////        content = categories
+//    )
 }
 @Composable
 fun ProductScreenContent(
-    content:List<Categories>
+    uiState: ProductScreenUiState
 ){
-    Surface(modifier = Modifier
-        .fillMaxSize()
-    ){
-
-        Column(modifier = Modifier
+    var allKeyword = stringResource(id = R.string.all)
+    var selectedCatName by rememberSaveable {
+        mutableStateOf(allKeyword)
+    }
+    Column(
+        modifier = Modifier
             .padding(bottom = 50.dp)
-        ) {
-            SearchBar(Modifier.padding(horizontal = 16.dp))
-            Spacer(modifier = Modifier.height(5.dp))
-            ProductList(content.get(0).subcategories.get(0).itemList)
-        }
-        Row(
+    ) {
+        SearchBar(Modifier.padding(horizontal = 16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
+        ProductList(
+            uiState.productUiState.productList,
+            selectedCatName = selectedCatName,
+            allCatText = stringResource(id = R.string.all))
+    }
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        CategoryList(
             modifier = Modifier,
-            verticalAlignment = Alignment.Bottom
-        ){
-            CategoryList(modifier = Modifier,content, onCategorySelect = {
-
-            })
-        }
+            uiState.categoryUIState.categoryList,
+            selectedCatName,
+            onCategoryClick = remember { { selectedCatName=it } }
+        )
     }
 }
 @Composable
 fun CategoryList(
     modifier : Modifier = Modifier,
     categories: List<Categories>,
-    onCategorySelect:()->Unit
+    selectedCatName: String,
+    onCategoryClick: (String) -> Unit
 ) {
         LazyRow(
+
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
+                .padding(start = 5.dp)
                 .background(Color.White)
         ) {
-            items(categories.size) { i ->
-                val category = categories.get(i)
-                CategoryItem(pos = i,category, onCategorySelect = {
-                    onCategorySelect(i)
-                })
+            item {
+                CategoryItem(
+                    categoryName = stringResource(id = R.string.all),
+                    selectedCatName = selectedCatName,
+                    onCategoryClick = onCategoryClick
+                )
+            }
+            items(categories) { item ->
+                CategoryItem(
+                    categoryName = item.name?:"--",
+                    selectedCatName = selectedCatName,
+                    onCategoryClick = onCategoryClick
+                )
             }
         }
 }
 @Composable
 fun ProductList(
-    content:List<ItemList>
+    productList: List<ItemList>,
+    selectedCatName: String,
+    allCatText:String
 ){
     Column (
         modifier = Modifier
+
     ) {
         LazyVerticalGrid(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier
+                .background(colorResource(id = R.color.list_background))
+                .padding(horizontal = 8.dp),
             columns = GridCells.Fixed(1),
+            contentPadding = PaddingValues(6.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(content) { item ->
+            items(
+                if(selectedCatName == allCatText)
+                 productList
+                else
+                 productList.filter { it.category?.uppercase() == selectedCatName.uppercase() }
+            ) { item ->
                 FoodItem(item)
             }
         }

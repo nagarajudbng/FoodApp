@@ -68,21 +68,22 @@ fun FoodItem(
         onClick = {
 
         },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(
-            2.dp,
-            Brush.horizontalGradient(
-                listOf(
-                    colorResource(id = R.color.dark_green),
-                    colorResource(id = R.color.hunter_green),
-                    colorResource(id = R.color.dark_moss_green),
-                    colorResource(id = R.color.walnut_brown),
-                    colorResource(id = R.color.bole),
-                    colorResource(id = R.color.cordovan),
-                    colorResource(id = R.color.redwood)
-                )
-            )
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+//        ,
+//        border = BorderStroke(
+//            1.dp,
+//            Brush.horizontalGradient(
+//                listOf(
+//                    colorResource(id = R.color.dark_green),
+//                    colorResource(id = R.color.hunter_green),
+//                    colorResource(id = R.color.dark_moss_green),
+//                    colorResource(id = R.color.walnut_brown),
+//                    colorResource(id = R.color.bole),
+//                    colorResource(id = R.color.cordovan),
+//                    colorResource(id = R.color.redwood)
+//                )
+//            )
+//        )
     ) {
         Row(
             modifier = Modifier
@@ -112,8 +113,9 @@ fun FoodItem(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
+                        var rid = if(item.menutype.equals("VEG")) R.drawable.veg else R.drawable.nonveg
                         Image(
-                            painter = painterResource(id = R.drawable.veg),
+                            painter = painterResource(id = rid ),
                             modifier = Modifier
                                 .height(32.dp)
                                 .padding(
@@ -135,12 +137,14 @@ fun FoodItem(
                         )
                     }
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = "Gobi Manchurian",
-                        modifier = Modifier.fillMaxWidth(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
+                    item.name?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.fillMaxWidth(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
                     Spacer(modifier = Modifier.height(5.dp))
                     Row() {
                         val ratingState = remember { mutableIntStateOf(3) }
@@ -160,7 +164,7 @@ fun FoodItem(
                     }
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = "190",
+                        text = "₹ ${item.price}",
                         modifier = Modifier.fillMaxWidth(),
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp

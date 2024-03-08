@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.codelabs.foodapp.feature_auth.data.remote.response.LoginResponseParent
@@ -31,40 +32,13 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = colorResource(id = R.color.list_background)
                 ) {
-//                    Greeting("Android")
-                    loginAuthendication()
                     val navController = rememberNavController()
                     AppNavHost(navController = navController)
                 }
             }
         }
-    }
-}
-
-fun loginAuthendication() {
-    try {
-        val json = JSONObject("{\"LoginRequest\":{\"password\":\"Vamsi@1289\",\"username\":\"vamsi@gmail.com\"}}")
-//        json.put("email", eMail)
-//        json.put("password", ePass)
-        val requestBody: RequestBody = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
-        val call: Call<JSONObject> = apiService.registrationPost(json)
-        call.enqueue(
-            object : Callback<JSONObject> {
-                override fun onResponse(call: Call<JSONObject>?, response: Response<JSONObject>?) {
-                    if (response!!.isSuccessful) {
-
-                        //finishAndRemoveTask()
-                    } else {
-
-                    }
-                }
-                override fun onFailure(call: Call<JSONObject>?, t: Throwable?) {
-
-                }
-            })
-    } catch (e: Exception) {
     }
 }
 

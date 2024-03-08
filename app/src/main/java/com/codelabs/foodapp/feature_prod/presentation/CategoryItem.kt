@@ -3,6 +3,7 @@ package com.codelabs.foodapp.feature_prod.presentation
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,28 +24,36 @@ fun CategoryItemPreview(){
 //    }, i)
 }
 @Composable
-fun CategoryItem( pos: Int,item: Categories, onCategorySelect: () -> Unit) {
+fun CategoryItem(
+    categoryName: String,
+    selectedCatName: String,
+    onCategoryClick: (String) -> Unit
+) {
     OutlinedButton(
         modifier = Modifier,
         onClick = {
-
+                onCategoryClick(categoryName)
         },
         border = BorderStroke(1.dp, colorResource(id = R.color.ligh_grey)),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = colorResource(
-                id = R.color.ligh_grey
-            )
+            containerColor = if (categoryName == selectedCatName) {
+                colorResource(
+                    id = R.color.ligh_grey
+                )
+            } else {
+                colorResource(
+                    id = R.color.ligh_grey
+                ).copy(alpha = 0.2f)
+            }
         )
     ) {
-        item.name?.let {
             Text(
-                text = it,
+                text = categoryName,
                 modifier = Modifier ,
-                fontSize =18.sp,
+                fontSize =12.sp,
                 color = Color.Black
 
             )
-        }
     }
 }
