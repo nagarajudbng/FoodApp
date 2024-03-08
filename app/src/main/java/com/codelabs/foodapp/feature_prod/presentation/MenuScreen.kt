@@ -97,7 +97,7 @@ fun MenuScreen(
 
         ) {
 
-            if (!uiState.productUiState.isLoading) {
+            if (uiState.productUiState.isLoading) {
                 Log.d("UI Render","Loading")
                 Row(
                     modifier = Modifier
@@ -133,6 +133,8 @@ fun ProductScreenContent(
     }
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.list_background))
             .padding(bottom = 50.dp)
     ) {
         SearchBar(Modifier.padding(horizontal = 16.dp))
@@ -164,8 +166,10 @@ fun CategoryList(
 
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
-                .padding(start = 5.dp)
+                .fillMaxWidth()
                 .background(Color.White)
+                .padding(start = 5.dp,end = 5.dp)
+
         ) {
             item {
                 CategoryItem(
